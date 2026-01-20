@@ -3,7 +3,6 @@
 const assert = require('node:assert').strict;
 const { describe, it } = require('node:test');
 
-const { getPlatform } = require('addon-tools-raub');
 const Segfault = require('..');
 
 
@@ -49,7 +48,7 @@ describe('Segfault', () => {
 		assert.strictEqual(typeof Segfault.setSignal, 'function');
 	});
 	
-	(getPlatform() === 'windows' ? signalsWindows : signalsUnix).forEach((name) => {
+	(process.platform === 'win32' ? signalsWindows : signalsUnix).forEach((name) => {
 		it(`contains the \`${name}\` constant`, () => {
 			assert.strictEqual(typeof Segfault[name], 'number');
 		});
