@@ -5,17 +5,16 @@
 
 #include <addon-tools.hpp>
 
+namespace segfault
+{
+	void init();
+	void registerHandler();
 
-namespace segfault {
-	DBG_EXPORT void init();
-	DBG_EXPORT void registerHandler();
-	
-	DBG_EXPORT JS_METHOD(causeSegfault);
-	DBG_EXPORT JS_METHOD(causeDivisionInt);
-	DBG_EXPORT JS_METHOD(causeOverflow);
-	DBG_EXPORT JS_METHOD(causeIllegal);
-	DBG_EXPORT JS_METHOD(setSignal);
+	Napi::Value causeSegfault(const Napi::CallbackInfo &info);
+	Napi::Value causeDivisionInt(const Napi::CallbackInfo &info);
+	Napi::Value causeOverflow(const Napi::CallbackInfo &info);
+	Napi::Value causeIllegal(const Napi::CallbackInfo &info);
+	Napi::Value setSignal(const Napi::CallbackInfo &info);
 }
-
 
 #endif /* _SEGFAULT_HANDLER_HPP_ */
