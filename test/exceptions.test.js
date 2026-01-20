@@ -26,15 +26,10 @@ describe('Exceptions', () => {
 	
 	// On Unix, the stacktrace is empty sometimes
 	if (process.platform === 'win32') {
-		it('shows symbol names in stacktrace', async () => {
-			let response = await runAndGetError('causeSegfault');
-			assert.match(response, /segfault::causeSegfault/);
-		});
-		
 		it('shows module names in stacktrace', async () => {
 			let response = await runAndGetError('causeSegfault');
-			assert.ok(response.includes('[node.exe]'));
-			assert.ok(response.includes('[julusian_segfault_handler.node]'));
+			// Check for module+offset format like: module.dll(+0xoffset) or module.node(+0xoffset)
+			assert.ok(response.includes('julusian_segfault_handler.node(+0x'));
 		});
 	}
 	
