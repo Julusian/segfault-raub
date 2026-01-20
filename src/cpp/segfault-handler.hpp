@@ -2,8 +2,10 @@
 #define _SEGFAULT_HANDLER_HPP_
 
 #define NAPI_VERSION 9
+#define NODE_ADDON_API_DISABLE_DEPRECATED
+#define NAPI_DISABLE_CPP_EXCEPTIONS
 
-#include <addon-tools.hpp>
+#include <napi.h>
 
 namespace segfault
 {

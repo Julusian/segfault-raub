@@ -268,13 +268,13 @@ namespace segfault
 		fn_ptr();
 	}
 
-	JS_METHOD(causeSegfault)
+	Napi::Value causeSegfault(const Napi::CallbackInfo &info)
 	{
 		Napi::Env env = info.Env();
 		std::cout << "SegfaultHandler: about to cause a segfault..." << std::endl;
 		void (*fn_ptr)() = _segfaultStackFrame2;
 		fn_ptr();
-		RET_UNDEFINED;
+		return env.Undefined();
 	}
 
 	NO_INLINE void _divideInt()
@@ -284,11 +284,11 @@ namespace segfault
 		a /= b;
 	}
 
-	JS_METHOD(causeDivisionInt)
+	Napi::Value causeDivisionInt(const Napi::CallbackInfo &info)
 	{
 		Napi::Env env = info.Env();
 		_divideInt();
-		RET_UNDEFINED;
+		return env.Undefined();
 	}
 
 	NO_INLINE void _overflowStack()
@@ -303,15 +303,15 @@ namespace segfault
 		_overflowStack(); // infinite recursion
 	}
 
-	JS_METHOD(causeOverflow)
+	Napi::Value causeOverflow(const Napi::CallbackInfo &info)
 	{
 		Napi::Env env = info.Env();
 		std::cout << "SegfaultHandler: about to overflow the stack..." << std::endl;
 		_overflowStack();
-		RET_UNDEFINED;
+		return env.Undefined();
 	}
 
-	JS_METHOD(causeIllegal)
+	Napi::Value causeIllegal(const Napi::CallbackInfo &info)
 	{
 		Napi::Env env = info.Env();
 		std::cout << "SegfaultHandler: about to raise an illegal operation..." << std::endl;
@@ -320,7 +320,7 @@ namespace segfault
 #else
 		raise(SIGILL);
 #endif
-		RET_UNDEFINED;
+		return env.Undefined();
 	}
 
 	static inline void _enableSignal(uint32_t signalId)
@@ -351,26 +351,26 @@ namespace segfault
 #endif
 	}
 
-	JS_METHOD(setSignal)
+	Napi::Value setSignal(const Napi::CallbackInfo &info)
 	{
 		Napi::Env env = info.Env();
-		if (IS_ARG_EMPTY(0))
+		if (info[0].IsNull() || info[0].IsUndefined())
 		{
-			RET_UNDEFINED;
+			return env.Undefined();
 		}
 
-		LET_INT32_ARG(0, signalId);
-		LET_BOOL_ARG(1, value);
+		int signalId = (info[0].IsNull() || info[0].IsUndefined()) ? 0 : info[0].ToNumber().Int32Value();
+		bool value = (info[1].IsNull() || info[1].IsUndefined()) ? false : info[1].ToBoolean().Value();
 
 		if (!signalNames.count(signalId))
 		{
-			RET_UNDEFINED;
+			return env.Undefined();
 		}
 
 		bool wasEnabled = signalActivity[signalId];
 		if (wasEnabled == value)
 		{
-			RET_UNDEFINED;
+			return env.Undefined();
 		}
 
 		signalActivity[signalId] = value;
@@ -383,7 +383,7 @@ namespace segfault
 			_disableSignal(signalId);
 		}
 
-		RET_UNDEFINED;
+		return env.Undefined();
 	}
 
 	void init()

@@ -6,136 +6,123 @@
 
 #include "segfault-handler.hpp"
 
-
-#define JS_SF_CONSTANT(name)                                                    \
-	exports.Set(#name, static_cast<double>(name));
-
-#define JS_SF_NULL(name)                                                        \
-	exports.Set(#name, JS_NULL);
-
-#define JS_SF_SET_METHOD(name)                                                  \
-	exports.DefineProperty(                                                     \
-		Napi::PropertyDescriptor::Function(env, exports, #name, segfault::name) \
-	);
-
-
-Napi::Object initModule(Napi::Env env, Napi::Object exports) {
+Napi::Object initModule(Napi::Env env, Napi::Object exports)
+{
 	segfault::init();
-	
-	JS_SF_SET_METHOD(causeSegfault);
-	JS_SF_SET_METHOD(causeDivisionInt);
-	JS_SF_SET_METHOD(causeOverflow);
-	JS_SF_SET_METHOD(causeIllegal);
-	JS_SF_SET_METHOD(setSignal);
-	
-#ifdef _WIN32
-	JS_SF_CONSTANT(EXCEPTION_ACCESS_VIOLATION);
-	JS_SF_CONSTANT(EXCEPTION_DATATYPE_MISALIGNMENT);
-	JS_SF_CONSTANT(EXCEPTION_BREAKPOINT);
-	JS_SF_CONSTANT(EXCEPTION_SINGLE_STEP);
-	JS_SF_CONSTANT(EXCEPTION_ARRAY_BOUNDS_EXCEEDED);
-	JS_SF_CONSTANT(EXCEPTION_FLT_DENORMAL_OPERAND);
-	JS_SF_CONSTANT(EXCEPTION_FLT_DIVIDE_BY_ZERO);
-	JS_SF_CONSTANT(EXCEPTION_FLT_INEXACT_RESULT);
-	JS_SF_CONSTANT(EXCEPTION_FLT_INVALID_OPERATION);
-	JS_SF_CONSTANT(EXCEPTION_FLT_OVERFLOW);
-	JS_SF_CONSTANT(EXCEPTION_FLT_STACK_CHECK);
-	JS_SF_CONSTANT(EXCEPTION_FLT_UNDERFLOW);
-	JS_SF_CONSTANT(EXCEPTION_INT_DIVIDE_BY_ZERO);
-	JS_SF_CONSTANT(EXCEPTION_INT_OVERFLOW);
-	JS_SF_CONSTANT(EXCEPTION_PRIV_INSTRUCTION);
-	JS_SF_CONSTANT(EXCEPTION_IN_PAGE_ERROR);
-	JS_SF_CONSTANT(EXCEPTION_ILLEGAL_INSTRUCTION);
-	JS_SF_CONSTANT(EXCEPTION_NONCONTINUABLE_EXCEPTION);
-	JS_SF_CONSTANT(EXCEPTION_STACK_OVERFLOW);
-	JS_SF_CONSTANT(EXCEPTION_INVALID_DISPOSITION);
-	JS_SF_CONSTANT(EXCEPTION_GUARD_PAGE);
-	JS_SF_CONSTANT(EXCEPTION_INVALID_HANDLE);
 
-	JS_SF_NULL(SIGINT);
-	JS_SF_NULL(SIGILL);
-	JS_SF_NULL(SIGABRT);
-	JS_SF_NULL(SIGFPE);
-	JS_SF_NULL(SIGSEGV);
-	JS_SF_NULL(SIGTERM);
-	JS_SF_NULL(SIGHUP);
-	JS_SF_NULL(SIGQUIT);
-	JS_SF_NULL(SIGTRAP);
-	JS_SF_NULL(SIGBUS);
-	JS_SF_NULL(SIGKILL);
-	JS_SF_NULL(SIGUSR1);
-	JS_SF_NULL(SIGUSR2);
-	JS_SF_NULL(SIGPIPE);
-	JS_SF_NULL(SIGALRM);
-	JS_SF_NULL(SIGCHLD);
-	JS_SF_NULL(SIGCONT);
-	JS_SF_NULL(SIGSTOP);
-	JS_SF_NULL(SIGTSTP);
-	JS_SF_NULL(SIGTTIN);
-	JS_SF_NULL(SIGTTOU);
-	JS_SF_NULL(SIGURG);
-	JS_SF_NULL(SIGXCPU);
-	JS_SF_NULL(SIGXFSZ);
-	JS_SF_NULL(SIGVTALRM);
-	JS_SF_NULL(SIGPROF);
-	JS_SF_NULL(SIGWINCH);
-	JS_SF_NULL(SIGSYS);
+	exports.DefineProperty(Napi::PropertyDescriptor::Function(env, exports, "causeSegfault", segfault::causeSegfault));
+	exports.DefineProperty(Napi::PropertyDescriptor::Function(env, exports, "causeDivisionInt", segfault::causeDivisionInt));
+	exports.DefineProperty(Napi::PropertyDescriptor::Function(env, exports, "causeOverflow", segfault::causeOverflow));
+	exports.DefineProperty(Napi::PropertyDescriptor::Function(env, exports, "causeIllegal", segfault::causeIllegal));
+	exports.DefineProperty(Napi::PropertyDescriptor::Function(env, exports, "setSignal", segfault::setSignal));
+
+#ifdef _WIN32
+	exports.Set("EXCEPTION_ACCESS_VIOLATION", static_cast<double>(EXCEPTION_ACCESS_VIOLATION));
+	exports.Set("EXCEPTION_DATATYPE_MISALIGNMENT", static_cast<double>(EXCEPTION_DATATYPE_MISALIGNMENT));
+	exports.Set("EXCEPTION_BREAKPOINT", static_cast<double>(EXCEPTION_BREAKPOINT));
+	exports.Set("EXCEPTION_SINGLE_STEP", static_cast<double>(EXCEPTION_SINGLE_STEP));
+	exports.Set("EXCEPTION_ARRAY_BOUNDS_EXCEEDED", static_cast<double>(EXCEPTION_ARRAY_BOUNDS_EXCEEDED));
+	exports.Set("EXCEPTION_FLT_DENORMAL_OPERAND", static_cast<double>(EXCEPTION_FLT_DENORMAL_OPERAND));
+	exports.Set("EXCEPTION_FLT_DIVIDE_BY_ZERO", static_cast<double>(EXCEPTION_FLT_DIVIDE_BY_ZERO));
+	exports.Set("EXCEPTION_FLT_INEXACT_RESULT", static_cast<double>(EXCEPTION_FLT_INEXACT_RESULT));
+	exports.Set("EXCEPTION_FLT_INVALID_OPERATION", static_cast<double>(EXCEPTION_FLT_INVALID_OPERATION));
+	exports.Set("EXCEPTION_FLT_OVERFLOW", static_cast<double>(EXCEPTION_FLT_OVERFLOW));
+	exports.Set("EXCEPTION_FLT_STACK_CHECK", static_cast<double>(EXCEPTION_FLT_STACK_CHECK));
+	exports.Set("EXCEPTION_FLT_UNDERFLOW", static_cast<double>(EXCEPTION_FLT_UNDERFLOW));
+	exports.Set("EXCEPTION_INT_DIVIDE_BY_ZERO", static_cast<double>(EXCEPTION_INT_DIVIDE_BY_ZERO));
+	exports.Set("EXCEPTION_INT_OVERFLOW", static_cast<double>(EXCEPTION_INT_OVERFLOW));
+	exports.Set("EXCEPTION_PRIV_INSTRUCTION", static_cast<double>(EXCEPTION_PRIV_INSTRUCTION));
+	exports.Set("EXCEPTION_IN_PAGE_ERROR", static_cast<double>(EXCEPTION_IN_PAGE_ERROR));
+	exports.Set("EXCEPTION_ILLEGAL_INSTRUCTION", static_cast<double>(EXCEPTION_ILLEGAL_INSTRUCTION));
+	exports.Set("EXCEPTION_NONCONTINUABLE_EXCEPTION", static_cast<double>(EXCEPTION_NONCONTINUABLE_EXCEPTION));
+	exports.Set("EXCEPTION_STACK_OVERFLOW", static_cast<double>(EXCEPTION_STACK_OVERFLOW));
+	exports.Set("EXCEPTION_INVALID_DISPOSITION", static_cast<double>(EXCEPTION_INVALID_DISPOSITION));
+	exports.Set("EXCEPTION_GUARD_PAGE", static_cast<double>(EXCEPTION_GUARD_PAGE));
+	exports.Set("EXCEPTION_INVALID_HANDLE", static_cast<double>(EXCEPTION_INVALID_HANDLE));
+
+	exports.Set("SIGINT", env.Null());
+	exports.Set("SIGILL", env.Null());
+	exports.Set("SIGABRT", env.Null());
+	exports.Set("SIGFPE", env.Null());
+	exports.Set("SIGSEGV", env.Null());
+	exports.Set("SIGTERM", env.Null());
+	exports.Set("SIGHUP", env.Null());
+	exports.Set("SIGQUIT", env.Null());
+	exports.Set("SIGTRAP", env.Null());
+	exports.Set("SIGBUS", env.Null());
+	exports.Set("SIGKILL", env.Null());
+	exports.Set("SIGUSR1", env.Null());
+	exports.Set("SIGUSR2", env.Null());
+	exports.Set("SIGPIPE", env.Null());
+	exports.Set("SIGALRM", env.Null());
+	exports.Set("SIGCHLD", env.Null());
+	exports.Set("SIGCONT", env.Null());
+	exports.Set("SIGSTOP", env.Null());
+	exports.Set("SIGTSTP", env.Null());
+	exports.Set("SIGTTIN", env.Null());
+	exports.Set("SIGTTOU", env.Null());
+	exports.Set("SIGURG", env.Null());
+	exports.Set("SIGXCPU", env.Null());
+	exports.Set("SIGXFSZ", env.Null());
+	exports.Set("SIGVTALRM", env.Null());
+	exports.Set("SIGPROF", env.Null());
+	exports.Set("SIGWINCH", env.Null());
+	exports.Set("SIGSYS", env.Null());
 #else
-	JS_SF_NULL(EXCEPTION_ACCESS_VIOLATION);
-	JS_SF_NULL(EXCEPTION_DATATYPE_MISALIGNMENT);
-	JS_SF_NULL(EXCEPTION_BREAKPOINT);
-	JS_SF_NULL(EXCEPTION_SINGLE_STEP);
-	JS_SF_NULL(EXCEPTION_ARRAY_BOUNDS_EXCEEDED);
-	JS_SF_NULL(EXCEPTION_FLT_DENORMAL_OPERAND);
-	JS_SF_NULL(EXCEPTION_FLT_DIVIDE_BY_ZERO);
-	JS_SF_NULL(EXCEPTION_FLT_INEXACT_RESULT);
-	JS_SF_NULL(EXCEPTION_FLT_INVALID_OPERATION);
-	JS_SF_NULL(EXCEPTION_FLT_OVERFLOW);
-	JS_SF_NULL(EXCEPTION_FLT_STACK_CHECK);
-	JS_SF_NULL(EXCEPTION_FLT_UNDERFLOW);
-	JS_SF_NULL(EXCEPTION_INT_DIVIDE_BY_ZERO);
-	JS_SF_NULL(EXCEPTION_INT_OVERFLOW);
-	JS_SF_NULL(EXCEPTION_PRIV_INSTRUCTION);
-	JS_SF_NULL(EXCEPTION_IN_PAGE_ERROR);
-	JS_SF_NULL(EXCEPTION_ILLEGAL_INSTRUCTION);
-	JS_SF_NULL(EXCEPTION_NONCONTINUABLE_EXCEPTION);
-	JS_SF_NULL(EXCEPTION_STACK_OVERFLOW);
-	JS_SF_NULL(EXCEPTION_INVALID_DISPOSITION);
-	JS_SF_NULL(EXCEPTION_GUARD_PAGE);
-	JS_SF_NULL(EXCEPTION_INVALID_HANDLE);
-    
-	JS_SF_CONSTANT(SIGINT);
-	JS_SF_CONSTANT(SIGILL);
-	JS_SF_CONSTANT(SIGABRT);
-	JS_SF_CONSTANT(SIGFPE);
-	JS_SF_CONSTANT(SIGSEGV);
-	JS_SF_CONSTANT(SIGTERM);
-	JS_SF_CONSTANT(SIGHUP);
-	JS_SF_CONSTANT(SIGQUIT);
-	JS_SF_CONSTANT(SIGTRAP);
-	JS_SF_CONSTANT(SIGBUS);
-	JS_SF_CONSTANT(SIGKILL);
-	JS_SF_CONSTANT(SIGUSR1);
-	JS_SF_CONSTANT(SIGUSR2);
-	JS_SF_CONSTANT(SIGPIPE);
-	JS_SF_CONSTANT(SIGALRM);
-	JS_SF_CONSTANT(SIGCHLD);
-	JS_SF_CONSTANT(SIGCONT);
-	JS_SF_CONSTANT(SIGSTOP);
-	JS_SF_CONSTANT(SIGTSTP);
-	JS_SF_CONSTANT(SIGTTIN);
-	JS_SF_CONSTANT(SIGTTOU);
-	JS_SF_CONSTANT(SIGURG);
-	JS_SF_CONSTANT(SIGXCPU);
-	JS_SF_CONSTANT(SIGXFSZ);
-	JS_SF_CONSTANT(SIGVTALRM);
-	JS_SF_CONSTANT(SIGPROF);
-	JS_SF_CONSTANT(SIGWINCH);
-	JS_SF_CONSTANT(SIGSYS);
+	exports.Set("EXCEPTION_ACCESS_VIOLATION", env.Null());
+	exports.Set("EXCEPTION_DATATYPE_MISALIGNMENT", env.Null());
+	exports.Set("EXCEPTION_BREAKPOINT", env.Null());
+	exports.Set("EXCEPTION_SINGLE_STEP", env.Null());
+	exports.Set("EXCEPTION_ARRAY_BOUNDS_EXCEEDED", env.Null());
+	exports.Set("EXCEPTION_FLT_DENORMAL_OPERAND", env.Null());
+	exports.Set("EXCEPTION_FLT_DIVIDE_BY_ZERO", env.Null());
+	exports.Set("EXCEPTION_FLT_INEXACT_RESULT", env.Null());
+	exports.Set("EXCEPTION_FLT_INVALID_OPERATION", env.Null());
+	exports.Set("EXCEPTION_FLT_OVERFLOW", env.Null());
+	exports.Set("EXCEPTION_FLT_STACK_CHECK", env.Null());
+	exports.Set("EXCEPTION_FLT_UNDERFLOW", env.Null());
+	exports.Set("EXCEPTION_INT_DIVIDE_BY_ZERO", env.Null());
+	exports.Set("EXCEPTION_INT_OVERFLOW", env.Null());
+	exports.Set("EXCEPTION_PRIV_INSTRUCTION", env.Null());
+	exports.Set("EXCEPTION_IN_PAGE_ERROR", env.Null());
+	exports.Set("EXCEPTION_ILLEGAL_INSTRUCTION", env.Null());
+	exports.Set("EXCEPTION_NONCONTINUABLE_EXCEPTION", env.Null());
+	exports.Set("EXCEPTION_STACK_OVERFLOW", env.Null());
+	exports.Set("EXCEPTION_INVALID_DISPOSITION", env.Null());
+	exports.Set("EXCEPTION_GUARD_PAGE", env.Null());
+	exports.Set("EXCEPTION_INVALID_HANDLE", env.Null());
+
+	exports.Set("SIGINT", static_cast<double>(SIGINT));
+	exports.Set("SIGILL", static_cast<double>(SIGILL));
+	exports.Set("SIGABRT", static_cast<double>(SIGABRT));
+	exports.Set("SIGFPE", static_cast<double>(SIGFPE));
+	exports.Set("SIGSEGV", static_cast<double>(SIGSEGV));
+	exports.Set("SIGTERM", static_cast<double>(SIGTERM));
+	exports.Set("SIGHUP", static_cast<double>(SIGHUP));
+	exports.Set("SIGQUIT", static_cast<double>(SIGQUIT));
+	exports.Set("SIGTRAP", static_cast<double>(SIGTRAP));
+	exports.Set("SIGBUS", static_cast<double>(SIGBUS));
+	exports.Set("SIGKILL", static_cast<double>(SIGKILL));
+	exports.Set("SIGUSR1", static_cast<double>(SIGUSR1));
+	exports.Set("SIGUSR2", static_cast<double>(SIGUSR2));
+	exports.Set("SIGPIPE", static_cast<double>(SIGPIPE));
+	exports.Set("SIGALRM", static_cast<double>(SIGALRM));
+	exports.Set("SIGCHLD", static_cast<double>(SIGCHLD));
+	exports.Set("SIGCONT", static_cast<double>(SIGCONT));
+	exports.Set("SIGSTOP", static_cast<double>(SIGSTOP));
+	exports.Set("SIGTSTP", static_cast<double>(SIGTSTP));
+	exports.Set("SIGTTIN", static_cast<double>(SIGTTIN));
+	exports.Set("SIGTTOU", static_cast<double>(SIGTTOU));
+	exports.Set("SIGURG", static_cast<double>(SIGURG));
+	exports.Set("SIGXCPU", static_cast<double>(SIGXCPU));
+	exports.Set("SIGXFSZ", static_cast<double>(SIGXFSZ));
+	exports.Set("SIGVTALRM", static_cast<double>(SIGVTALRM));
+	exports.Set("SIGPROF", static_cast<double>(SIGPROF));
+	exports.Set("SIGWINCH", static_cast<double>(SIGWINCH));
+	exports.Set("SIGSYS", static_cast<double>(SIGSYS));
 #endif
-	
+
 	return exports;
 }
-
 
 NODE_API_MODULE(julusian_segfault_handler, initModule)
