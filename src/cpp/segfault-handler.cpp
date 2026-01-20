@@ -41,10 +41,15 @@ namespace segfault
 	};
 #endif
 
-	const std::map<uint32_t, std::string> signalNames = {
+	// Simple struct for signal name lookup (async-signal-safe)
+	struct SignalNameEntry
+	{
+		uint32_t code;
+		const char *name;
+	};
+
+	static const SignalNameEntry signalNameTable[] = {
 #ifdef _WIN32
-#define EXCEPTION_ALL 0x0
-		{EXCEPTION_ALL, "CAPTURE ALL THE EXCEPTIONS"},
 		{EXCEPTION_ACCESS_VIOLATION, "ACCESS_VIOLATION"},
 		{EXCEPTION_DATATYPE_MISALIGNMENT, "DATATYPE_MISALIGNMENT"},
 		{EXCEPTION_BREAKPOINT, "BREAKPOINT"},
@@ -80,7 +85,7 @@ namespace segfault
 		{SIGCHLD, "SIGCHLD"},
 		{SIGCONT, "SIGCONT"},
 		{SIGHUP, "SIGHUP"},
-		{SIGKILL, "SIGKIL"},
+		{SIGKILL, "SIGKILL"},
 		{SIGPIPE, "SIGPIPE"},
 		{SIGQUIT, "SIGQUIT"},
 		{SIGSTOP, "SIGSTOP"},
@@ -160,6 +165,19 @@ namespace segfault
 	static char _crashBuf[512];
 	static void *_backtrace[32]; // Pre-allocated buffer for backtrace addresses
 
+	// Async-signal-safe lookup of signal name (no heap allocation, just linear search)
+	static const char *getSignalName(uint32_t sig)
+	{
+		for (size_t i = 0; i < sizeof(signalNameTable) / sizeof(signalNameTable[0]); i++)
+		{
+			if (signalNameTable[i].code == sig)
+			{
+				return signalNameTable[i].name;
+			}
+		}
+		return "UNKNOWN";
+	}
+
 	SEGFAULT_HANDLER
 	{
 		// SAFE crash handler: no allocations, no iostream, no STL, no map lookups
@@ -177,9 +195,10 @@ namespace segfault
 
 		// Just write minimal info and let Node.js handle the rest via abort()
 		int pid = GETPID();
+		const char *sigName = getSignalName(signalId);
 		int len = snprintf(_crashBuf, sizeof(_crashBuf),
-						   "\n*** CRASH: PID %d, Signal %u, Address 0x%llx ***\n",
-						   pid, signalId, (unsigned long long)address);
+						   "\n*** CRASH: PID %d, %s (Signal %u), Address 0x%llx ***\n",
+						   pid, sigName, signalId, (unsigned long long)address);
 
 #ifdef _WIN32
 		DWORD written;
@@ -362,7 +381,7 @@ namespace segfault
 		int signalId = (info[0].IsNull() || info[0].IsUndefined()) ? 0 : info[0].ToNumber().Int32Value();
 		bool value = (info[1].IsNull() || info[1].IsUndefined()) ? false : info[1].ToBoolean().Value();
 
-		if (!signalNames.count(signalId))
+		if (!signalActivity.count(signalId))
 		{
 			return env.Undefined();
 		}
