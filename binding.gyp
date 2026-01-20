@@ -9,7 +9,7 @@
 			'src/cpp/segfault-handler.cpp',
 		],
 		'include_dirs': [
-			'<!@(node -p "require(\'addon-tools-raub\').getInclude()")',
+			    "<!@(node -p \"require('node-addon-api').include\")"
 		],
 		'cflags_cc': ['-std=c++17', '-fno-exceptions'],
 		'cflags': ['-O0', '-funwind-tables', '-fno-exceptions'],
