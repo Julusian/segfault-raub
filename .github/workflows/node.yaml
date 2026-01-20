@@ -28,10 +28,10 @@ jobs:
           #   arch: arm64
           #   is-native: false
           # macos
-          - os: macos-13
+          - os: macos-14
             arch: arm64
             is-native: false
-          - os: macos-13
+          - os: macos-14
             arch: x64
             is-native: true
           # linux
