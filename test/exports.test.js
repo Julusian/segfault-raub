@@ -3,8 +3,11 @@
 const assert = require('node:assert').strict;
 const { describe, it } = require('node:test');
 
-const { getPlatform } = require('addon-tools-raub');
 const Segfault = require('..');
+
+// The addon gates its constants on `_WIN32` (all Windows, including ARM64),
+// so the OS - not the arch-aware `getPlatform()` - decides the constant set.
+const isWindows = process.platform === 'win32';
 
 
 const signalsWindows = [
@@ -49,7 +52,7 @@ describe('Segfault', () => {
 		assert.strictEqual(typeof Segfault.setSignal, 'function');
 	});
 	
-	(getPlatform() === 'windows' ? signalsWindows : signalsUnix).forEach((name) => {
+	(isWindows ? signalsWindows : signalsUnix).forEach((name) => {
 		it(`contains the \`${name}\` constant`, () => {
 			assert.strictEqual(typeof Segfault[name], 'number');
 		});

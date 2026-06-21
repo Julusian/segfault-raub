@@ -5,7 +5,12 @@ const { describe, it } = require('node:test');
 const util = require('node:util');
 const exec = util.promisify(require('node:child_process').exec);
 
-const { getPlatform } = require('addon-tools-raub');
+// The exception *name* depends on the OS only (the addon gates on `_WIN32`,
+// which covers all Windows including ARM64). Some tests are additionally
+// flaky/unsupported on ARM, so they are gated on `!isArm`.
+const isWindows = process.platform === 'win32';
+const isLinux = process.platform === 'linux';
+const isArm = process.arch === 'arm64' || process.arch === 'arm';
 
 
 const runAndGetError = async (name) => {
@@ -22,12 +27,12 @@ const runAndGetError = async (name) => {
 describe('Exceptions', () => {
 	it('reports segfaults', async () => {
 		let response = await runAndGetError('causeSegfault');
-		const exceptionName = getPlatform() === 'windows' ? 'ACCESS_VIOLATION' : 'SIGSEGV';
+		const exceptionName = isWindows ? 'ACCESS_VIOLATION' : 'SIGSEGV';
 		assert.ok(response.includes(exceptionName));
 	});
 	
 	// On Unix, the stacktrace is empty sometimes
-	if (['windows'].includes(getPlatform())) {
+	if (isWindows && !isArm) {
 		it('shows symbol names in stacktrace', async () => {
 			let response = await runAndGetError('causeSegfault');
 			assert.match(response, /segfault::causeSegfault/);
@@ -41,26 +46,26 @@ describe('Exceptions', () => {
 	}
 	
 	// On ARM this fails
-	if (['windows', 'linux'].includes(getPlatform())) {
+	if ((isWindows || isLinux) && !isArm) {
 		it('reports divisions by zero (int)', async () => {
 			let response = await runAndGetError('causeDivisionInt');
-			const exceptionName = getPlatform() === 'windows' ? 'INT_DIVIDE_BY_ZERO' : 'SIGFPE';
+			const exceptionName = isWindows ? 'INT_DIVIDE_BY_ZERO' : 'SIGFPE';
 			assert.ok(response.includes(exceptionName));
 		});
 	}
 	
 	// On Unix, this hangs for some reason
-	if (['windows'].includes(getPlatform())) {
+	if (isWindows && !isArm) {
 		it('reports stack overflows', async () => {
 			let response = await runAndGetError('causeOverflow');
-			const exceptionName = getPlatform() === 'windows' ? 'STACK_OVERFLOW' : 'SIGSEGV';
+			const exceptionName = isWindows ? 'STACK_OVERFLOW' : 'SIGSEGV';
 			assert.ok(response.includes(exceptionName));
 		});
 	}
 	
 	it('reports illegal operations', async () => {
 		let response = await runAndGetError('causeIllegal');
-		const exceptionName = getPlatform() === 'windows' ? 'ILLEGAL_INSTRUCTION' : 'SIGILL';
+		const exceptionName = isWindows ? 'ILLEGAL_INSTRUCTION' : 'SIGILL';
 		assert.ok(response.includes(exceptionName));
 	});
 });
